@@ -15,7 +15,7 @@ potholesRouter.post('/', async (request, response) => {
 
   const potholes = await Pothole.find()
   potholes.forEach(pothole => {
-    if (geometryUtil.lngLatDist(body, pothole) < 0.000001) {
+    if (geometryUtil.coordsDistM(body, pothole) < 1) {
       return response.send(pothole)
     }
   })
