@@ -30,16 +30,27 @@
         margin-top: 1rem;
         text-align: center;
       }
+      img {
+        height: 2rem;
+        width: 10rem;
+        margin-top: 1rem;
+      }
     </style>
   </head>
   <body>
     <div id="container">
       <div id="map"></div>
-      <h3>Welcome.</h3>
+      <img src="logo.png">
     </div>
 
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
+      var potholes = []
+
+      var warning = document.createElement("div");
+      warning.className = "alert alert-warning";
+      warning.innerHTML = "Pothole ahead! Watch out."
+
       mapboxgl.accessToken = 'pk.eyJ1IjoiaGFha2FtMjEiLCJhIjoiY2tjbmlqamJ6MGI4dDM0bGJlNjMyNjZrYSJ9.akOmoDir6UBVboKQnLsIXg';
 
       var map = new mapboxgl.Map({
@@ -49,41 +60,28 @@
         zoom: 3
       });
 
+      map.addControl(new mapboxgl.ScaleControl());
       map.addControl(new mapboxgl.NavigationControl());
-      map.addControl(new mapboxgl.GeolocateControl({
+
+      const geolocate = new mapboxgl.GeolocateControl({
         positionOptions: { enableHighAccuracy: true },
         trackUserLocation: true
-      }));
-      map.addControl(new mapboxgl.ScaleControl());
+      });
+      map.addControl(geolocate);
 
-      var potholes = []
+      map.on('load', function() {
+      	geolocate.trigger();
+      });
 
-      if ("geolocation" in navigator) {
-        var warning = document.createElement("div");
-        warning.className = "alert alert-warning";
-        warning.innerHTML = "Pothole ahead! Watch out."
-
-        var error = document.createElement("div");
-        error.className = "alert alert-danger";
-
-        navigator.geolocation.watchPosition(function (position) {
-          warning.remove();
-          for (i = 0; i < potholes.length; i++) {
-            if (coordsDistM(position.coords, potholes[i]) < 30) {
-              document.getElementById("container").prepend(warning);
-              break;
-            }
+      geolocate.on('geolocate', function(){
+        warning.remove();
+        for (i = 0; i < potholes.length; i++) {
+          if (coordsDistM(geolocate._lastKnownPosition.coords, potholes[i]) < 30) {
+            document.getElementById("container").prepend(warning);
+            break;
           }
-        }, function (geoError) {
-          error.remove();
-          error.innerHTML = "Geolocation error: " + geoError.message
-          document.getElementById("container").prepend(error);
-        }, {
-          enableHighAccuracy: false,
-          timeout: 5000,
-          maximumAge: 0
-        });
-      }
+        }
+      });
 
       (async function () {
         var response = await axios.get('/api/potholes');

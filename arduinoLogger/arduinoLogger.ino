@@ -4,6 +4,8 @@
 #include <ArduinoHttpClient.h>
 #include <BlynkSimpleMKR1000.h>
 
+const int button_pin = 7;
+
 const char ssid[] = "Haakam’s iPhone";//"MannAujla";//
 const char pass[] = "123haakam";//"663012345";//
 
@@ -29,6 +31,7 @@ int pothole;
 
 void setup()
 {
+  pinMode(button_pin, INPUT);
   pinMode(LED_BUILTIN, OUTPUT);
   
   Serial.begin(9600);
@@ -65,6 +68,8 @@ BLYNK_WRITE(V0)
   x = param[0].asFloat();
   y = param[1].asFloat();
   z = param[2].asFloat() + 1;
+
+  pothole = digitalRead(button_pin);
 
   if (client.connected()) {
     digitalWrite(LED_BUILTIN, LOW);

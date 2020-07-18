@@ -1,8 +1,13 @@
+#define BLYNK_PRINT Serial
+
 #include <WiFi101.h>
 #include <ArduinoHttpClient.h>
+#include <BlynkSimpleMKR1000.h>
 
-const char ssid[] = "Haakam’s iPhone";//"MannAujla";
-const char pass[] = "123haakam";//"663012345";
+const int button_pin = 7;
+
+const char ssid[] = "MannAujla";//"Haakam’s iPhone";//
+const char pass[] = "663012345";//"123haakam";//
 
 const char server[] = "my-road-conditions.herokuapp.com";
 const int port = 80;
@@ -10,11 +15,29 @@ const int port = 80;
 WiFiClient wifi;
 HttpClient client = HttpClient(wifi, server, port);
 
+const char auth[] = "iH74nfKFF3MnA2GHucEhrYlg0IkeZ15z";
+
 int status = WL_IDLE_STATUS;
+
+float x;
+float y;
+float z;
+
+float dx;
+float dy;
+float dz;
+
+float lng;
+float lat;
 
 void setup()
 {
+  pinMode(button_pin, INPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
+
   Serial.begin(9600);
+
+  digitalWrite(LED_BUILTIN, HIGH);
 
   while (status != WL_CONNECTED) {
     Serial.print("Connecting to: ");
@@ -22,27 +45,52 @@ void setup()
 
     status = WiFi.begin(ssid, pass);
   }
+
+  Blynk.begin(auth, ssid, pass);
+
+  digitalWrite(LED_BUILTIN, LOW);
 }
 
 void loop()
 {
-  String route = "/api/potholes";
-  String contentType = "application/json";
-  String postData = "{\"latitude\": 0, \"longitude\": 0}";
+  Blynk.run();
+  if (digitalRead(button_pin)) {
+    String route = "/api/potholes";
+    String contentType = "application/json";
+    String postData = "{\"latitude\":" + String(lat, 6) + ",\"longitude\":" + String(lng, 6) + "}";
 
-  Serial.print("POST data: ");
-  Serial.println(postData);
+    Serial.print("Data: ");
+    Serial.println(postData);
 
-  client.post(route, contentType, postData);
+    client.post(route, contentType, postData);
 
-  // read the status code and body of the response
-  int statusCode = client.responseStatusCode();
-  String response = client.responseBody();
+    int statusCode = client.responseStatusCode();
+    String response = client.responseBody();
 
-  Serial.print("Status code: ");
-  Serial.println(statusCode);
-  Serial.print("Response: ");
-  Serial.println(response);
-  
-  delay(100000);
+    Serial.print("Status code: ");
+    Serial.println(statusCode);
+    Serial.print("Response: ");
+    Serial.println(response);
+  }
+}
+
+BLYNK_WRITE(V0)
+{
+  dx = param[0].asFloat() - x;
+  dy = param[1].asFloat() - y;
+  dz = param[2].asFloat() + 1 - y;
+
+  x = param[0].asFloat();
+  y = param[1].asFloat();
+  z = param[2].asFloat() + 1;
+
+  Serial.println("acc data updated");
+}
+
+BLYNK_WRITE(V1)
+{
+  lat = param[0].asFloat();
+  lng = param[1].asFloat();
+
+  Serial.println("gps data updated");
 }
