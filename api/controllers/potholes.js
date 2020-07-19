@@ -15,6 +15,8 @@ potholesRouter.get('/', async (request, response) => {
 potholesRouter.post('/', async (request, response) => {
   const body = request.body
 
+  console.log(body)
+
   try {
     const point = { coordinates: [body.longitude, body.latitude], radius: 50 }
 
