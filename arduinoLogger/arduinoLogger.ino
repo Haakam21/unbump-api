@@ -69,12 +69,10 @@ BLYNK_WRITE(V0)
   y = param[1].asFloat();
   z = param[2].asFloat() + 1;
 
-  pothole = digitalRead(button_pin);
-
   if (client.connected()) {
     digitalWrite(LED_BUILTIN, LOW);
     
-    String data = "{\"acc_x\":" + String(x, 6) + ",\"acc_y\":" + String(y, 6) + ",\"acc_z\":" + String(z, 6) + ",\"acc_dx\":" + String(dx, 6) + ",\"acc_dy\":" + String(dy, 6) + ",\"acc_dz\":" + String(dz, 6) + ",\"pothole\":" + String(pothole) + "}";
+    String data = "{\"acc_x\":" + String(x, 6) + ",\"acc_y\":" + String(y, 6) + ",\"acc_z\":" + String(z, 6) + ",\"acc_dx\":" + String(dx, 6) + ",\"acc_dy\":" + String(dy, 6) + ",\"acc_dz\":" + String(dz, 6) + ",\"pothole\":" + String(pothole || digitalRead(button_pin)) + "}";
 
     Serial.print("Logging: ");
     Serial.println(data);

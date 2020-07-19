@@ -2,7 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>My Road Conditions</title>
+    <link rel="icon" href="icon.jpg" width=32 height=20>
+    <title>Road Recon</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
 
@@ -26,13 +27,9 @@
       #map {
         flex: 1 1 auto;
       }
-      h3 {
-        margin-top: 1rem;
-        text-align: center;
-      }
       img {
-        height: 2rem;
-        width: 10rem;
+        height: 3rem;
+        width: 15rem;
         margin-top: 1rem;
       }
     </style>
@@ -40,10 +37,11 @@
   <body>
     <div id="container">
       <div id="map"></div>
-      <img src="logo.png">
+      <img src="logo.jpg">
     </div>
 
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/cheap-ruler@3.0.1/cheap-ruler.min.js"></script>
     <script>
       var potholes = []
 
@@ -74,9 +72,13 @@
       });
 
       geolocate.on('geolocate', function(){
+        var coords = geolocate._lastKnownPosition.coords
+
+        var ruler = new CheapRuler(coords.latitude, 'meters');
+
         warning.remove();
         for (i = 0; i < potholes.length; i++) {
-          if (coordsDistM(geolocate._lastKnownPosition.coords, potholes[i]) < 30) {
+          if (ruler.distance([coords.latitude, coords.longitude], [potholes[i].latitude, potholes[i].longitude]) < 30) {
             document.getElementById("container").prepend(warning);
             break;
           }
@@ -92,20 +94,6 @@
           new mapboxgl.Marker().setLngLat([potholes[i].longitude, potholes[i].latitude]).addTo(map);
         }
       })();
-
-      function coordsDistM(coords0, coords1) {
-        var dLat = toRad(coords1.latitude - coords0.latitude);
-        var dLon = toRad(coords1.longitude - coords0.longitude);
-        var lat1 = toRad(coords0.latitude);
-        var lat2 = toRad(coords1.latitude);
-
-        var a = Math.pow(Math.sin(dLat / 2), 2) + Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1) * Math.cos(lat2);
-        return 12746000 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); //units: meters
-      }
-
-      function toRad(degree) {
-        return degree * Math.PI / 180;
-      }
     </script>
   </body>
 </html>
