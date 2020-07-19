@@ -15,6 +15,7 @@ potholesRouter.get('/', async (request, response) => {
 potholesRouter.post('/', async (request, response) => {
   const body = request.body
 
+  console.log(request)
   console.log(body)
 
   try {

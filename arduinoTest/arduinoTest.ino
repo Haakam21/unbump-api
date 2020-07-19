@@ -61,7 +61,7 @@ void loop()
   if (pothole || digitalRead(button_pin)) {
     Serial.println("pothole");
     
-    Blynk.virtualWrite(V3, lat, lng);//https://raw.githubusercontent.com/blynkkk/blynk-library/master/extras/logo.txt"https://my-road-conditions.herokuapp.com/api/potholes"
+    Blynk.virtualWrite(V3, String(lat, 6), String(lng, 6));//https://raw.githubusercontent.com/blynkkk/blynk-library/master/extras/logo.txt"https://my-road-conditions.herokuapp.com/api/potholes"
 
     while (digitalRead(button_pin)) {
       ;
