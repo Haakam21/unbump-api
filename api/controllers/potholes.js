@@ -41,9 +41,9 @@ potholesRouter.post('/', async (request, response) => {
 
     response.send(pothole)
     console.log('pothole recorded')
-  } catch {
+  } catch (error) {
     response.send({ error: 'failed to record pothole' })
-    console.log('pothole error')
+    console.log(error)
   }
 })
 
