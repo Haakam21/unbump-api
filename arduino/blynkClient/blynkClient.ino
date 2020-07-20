@@ -1,11 +1,12 @@
 #define BLYNK_PRINT Serial
 
+#include <SPI.h>
 #include <WiFi101.h>
 #include <ArduinoHttpClient.h>
 #include <BlynkSimpleMKR1000.h>
 
-const char ssid[] = "Haakam’s iPhone";//"MannAujla";//
-const char pass[] = "123haakam";//"663012345";//
+const char ssid[] = "Haakam’s iPhone";
+const char pass[] = "123haakam";
 
 const char server[] = "my-road-conditions.herokuapp.com";
 const int port = 80;
@@ -38,6 +39,8 @@ float dz;
 float lng;
 float lat;
 
+float spd;
+
 void setup()
 {
   pinMode(LED_BUILTIN, OUTPUT);
@@ -67,11 +70,11 @@ BLYNK_WRITE(V0)
 {
   dx = param[0].asFloat() - x;
   dy = param[1].asFloat() - y;
-  dz = param[2].asFloat() - y;
+  dz = param[2].asFloat() + 1 - y;
 
   x = param[0].asFloat();
   y = param[1].asFloat();
-  z = param[2].asFloat();
+  z = param[2].asFloat() + 1;
 
   /*for (int i = history_window; i > 0; i = i - 1) {
     delta_acc_x[i] = delta_acc_x[i - 1];
@@ -124,12 +127,17 @@ BLYNK_WRITE(V1)
 {
   lat = param[0].asFloat();
   lng = param[1].asFloat();
+  spd = param[3].asFloat();
 }
 
 BLYNK_WRITE(V2)
 {
   int pothole = param.asInt();
   if (pothole) {
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(500);
+    digitalWrite(LED_BUILTIN, LOW);
+
     String route = "/api/potholes";
     String contentType = "application/json";
     String postData = "{\"latitude\":" + String(lat, 6) + ",\"longitude\":" + String(lng, 6) + "}";

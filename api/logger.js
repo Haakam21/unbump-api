@@ -27,6 +27,6 @@ wss.on('connection', (ws) => {
 })
 
 const saveData = async (csv) => {
-  await csv.toDisk('data.csv', { append: true })
+  await csv.toDisk('model/data.csv', { append: true })
   console.log('data saved')
 }

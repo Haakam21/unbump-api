@@ -15,39 +15,31 @@ potholesRouter.get('/', async (request, response) => {
 potholesRouter.post('/', async (request, response) => {
   const body = request.body
 
-  console.log(request)
-  console.log(body)
+  const point = { coordinates: [body.longitude, body.latitude], radius: 50 }
 
-  try {
-    const point = { coordinates: [body.longitude, body.latitude], radius: 50 }
+  const mapboxResponse = await mapMatchingService.getMatch({ points: [point, point] }).send()
 
-    const mapboxResponse = await mapMatchingService.getMatch({ points: [point, point] }).send()
+  const latitude = mapboxResponse.body.tracepoints[0].location[1]
+  const longitude = mapboxResponse.body.tracepoints[0].location[0]
 
-    const latitude = mapboxResponse.body.tracepoints[0].location[1]
-    const longitude = mapboxResponse.body.tracepoints[0].location[0]
+  const ruler = new CheapRuler(latitude, 'meters')
 
-    const ruler = new CheapRuler(latitude, 'meters')
+  const potholes = await Pothole.find()
+  potholes.forEach(pothole => {
+    if (ruler.distance([latitude, longitude], [pothole.latitude, pothole.longitude]) < 1) {
+      return response.send(pothole)
+    }
+  })
 
-    const potholes = await Pothole.find()
-    potholes.forEach(pothole => {
-      if (ruler.distance([latitude, longitude], [pothole.latitude, pothole.longitude]) < 1) {
-        return response.send(pothole)
-      }
-    })
+  const pothole = new Pothole({
+    latitude: latitude,
+    longitude: longitude,
+    date: new Date()
+  })
+  await pothole.save()
 
-    const pothole = new Pothole({
-      latitude: latitude,
-      longitude: longitude,
-      date: new Date()
-    })
-    await pothole.save()
-
-    response.send(pothole)
-    console.log('pothole recorded')
-  } catch (error) {
-    response.send({ error: 'failed to record pothole' })
-    console.log(error)
-  }
+  response.send(pothole)
+  console.log('pothole recorded')
 })
 
 module.exports = potholesRouter

@@ -1,15 +1,16 @@
 #define BLYNK_PRINT Serial
 
+#include <SPI.h>
 #include <WiFi101.h>
 #include <ArduinoHttpClient.h>
 #include <BlynkSimpleMKR1000.h>
 
 const int button_pin = 7;
 
-const char ssid[] = "Haakam’s iPhone";//"MannAujla";//
-const char pass[] = "123haakam";//"663012345";//
+const char ssid[] = "Haakam’s iPhone";
+const char pass[] = "123haakam";
 
-const char server[] = "73.145.227.47";//"192.168.1.15";
+const char server[] = "73.145.227.47";
 const int port = 8081;
 
 WiFiClient wifi;
@@ -27,13 +28,15 @@ float dx;
 float dy;
 float dz;
 
+float spd;
+
 int pothole;
 
 void setup()
 {
   pinMode(button_pin, INPUT);
   pinMode(LED_BUILTIN, OUTPUT);
-  
+
   Serial.begin(9600);
 
   digitalWrite(LED_BUILTIN, HIGH);
@@ -71,8 +74,9 @@ BLYNK_WRITE(V0)
 
   if (client.connected()) {
     digitalWrite(LED_BUILTIN, LOW);
-    
-    String data = "{\"acc_x\":" + String(x, 6) + ",\"acc_y\":" + String(y, 6) + ",\"acc_z\":" + String(z, 6) + ",\"acc_dx\":" + String(dx, 6) + ",\"acc_dy\":" + String(dy, 6) + ",\"acc_dz\":" + String(dz, 6) + ",\"pothole\":" + String(pothole || digitalRead(button_pin)) + "}";
+
+    //String data = "{\"acc_x\":" + String(x, 6) + ",\"acc_y\":" + String(y, 6) + ",\"acc_z\":" + String(z, 6) + ",\"acc_dx\":" + String(dx, 6) + ",\"acc_dy\":" + String(dy, 6) + ",\"acc_dz\":" + String(dz, 6) + ",\"spd\":" + String(spd, 6) + ",\"pothole\":" + String(pothole || digitalRead(button_pin)) + "}";
+    String data = "{\"acc_y\":" + String(y, 6) + ",\"acc_z\":" + String(z, 6) + ",\"acc_dy\":" + String(dy, 6) + ",\"acc_dz\":" + String(dz, 6) + ",\"spd\":" + String(spd, 6) + ",\"pothole\":" + String(pothole || digitalRead(button_pin)) + "}";
 
     Serial.print("Logging: ");
     Serial.println(data);
@@ -89,11 +93,16 @@ BLYNK_WRITE(V0)
     }
   } else {
     digitalWrite(LED_BUILTIN, HIGH);
-    
+
     Serial.print("Connecting to: ");
     Serial.println(server);
     client.begin();
   }
+}
+
+BLYNK_WRITE(V1)
+{
+  spd = param[3].asFloat();
 }
 
 BLYNK_WRITE(V2)
