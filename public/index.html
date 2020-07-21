@@ -2,6 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <link rel="icon" href="icon.jpg">
     <title>Road Recon</title>
 
@@ -71,7 +73,9 @@
       	geolocate.trigger();
       });
 
-      geolocate.on('geolocate', function(){
+      document.getElementById("container").prepend(warning);
+
+      /*geolocate.on('geolocate', function(){
         var coords = geolocate._lastKnownPosition.coords
 
         var ruler = new CheapRuler(coords.latitude, 'meters');
@@ -83,7 +87,7 @@
             break;
           }
         }
-      });
+      });*/
 
       (async function () {
         var response = await axios.get('/api/potholes');
