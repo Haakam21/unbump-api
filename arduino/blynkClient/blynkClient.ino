@@ -30,11 +30,11 @@ float delta_acc_z[history_window];*/
 
 float x;
 float y;
-float z;
+float acc_z;
 
 float dx;
 float dy;
-float dz;
+float acc_dz;
 
 float lng;
 float lat;
@@ -68,13 +68,36 @@ void loop()
 
 BLYNK_WRITE(V0)
 {
-  dx = param[0].asFloat() - x;
-  dy = param[1].asFloat() - y;
-  dz = param[2].asFloat() + 1 - y;
+  acc_dx = param[0].asFloat() - acc_x;
+  acc_dy = param[1].asFloat() - acc_y;
+  acc_dz = param[2].asFloat() + 1 - acc_z;
 
-  x = param[0].asFloat();
-  y = param[1].asFloat();
-  z = param[2].asFloat() + 1;
+  acc_x = param[0].asFloat();
+  acc_y = param[1].asFloat();
+  acc_z = param[2].asFloat() + 1;
+
+  if (acc_z * acc_z >= 0.4 && acc_dz * acc_dz >= 0.8) {
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(500);
+    digitalWrite(LED_BUILTIN, LOW);
+
+    String route = "/api/potholes";
+    String contentType = "application/json";
+    String postData = "{\"latitude\":" + String(lat, 6) + ",\"longitude\":" + String(lng, 6) + "}";
+
+    Serial.print("Data: ");
+    Serial.println(postData);
+
+    client.post(route, contentType, postData);
+
+    int statusCode = client.responseStatusCode();
+    String response = client.responseBody();
+
+    Serial.print("Status code: ");
+    Serial.println(statusCode);
+    Serial.print("Response: ");
+    Serial.println(response);
+  }
 
   /*for (int i = history_window; i > 0; i = i - 1) {
     delta_acc_x[i] = delta_acc_x[i - 1];

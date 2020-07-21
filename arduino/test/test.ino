@@ -7,8 +7,8 @@
 
 const int button_pin = 7;
 
-const char ssid[] = "Haakam’s iPhone";//"MannAujla";//
-const char pass[] = "123haakam";//"663012345";//
+const char ssid[] = "MannAujla";//"Haakam’s iPhone";//
+const char pass[] = "663012345";//"123haakam";//
 
 const char server[] = "my-road-conditions.herokuapp.com";//"192.168.1.15";//
 const int port = 80;//8080;//
@@ -81,7 +81,7 @@ BLYNK_WRITE(V0)
 {
   dx = param[0].asFloat() - x;
   dy = param[1].asFloat() - y;
-  dz = param[2].asFloat() + 1 - y;
+  dz = param[2].asFloat() + 1 - z;
 
   x = param[0].asFloat();
   y = param[1].asFloat();

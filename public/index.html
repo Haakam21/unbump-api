@@ -71,7 +71,9 @@
       	geolocate.trigger();
       });
 
-      geolocate.on('geolocate', function(){
+      document.getElementById("container").prepend(warning);
+
+      /*geolocate.on('geolocate', function(){
         var coords = geolocate._lastKnownPosition.coords
 
         var ruler = new CheapRuler(coords.latitude, 'meters');
@@ -83,7 +85,7 @@
             break;
           }
         }
-      });
+      });*/
 
       (async function () {
         var response = await axios.get('/api/potholes');

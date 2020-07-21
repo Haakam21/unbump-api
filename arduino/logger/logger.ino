@@ -66,7 +66,7 @@ BLYNK_WRITE(V0)
 {
   dx = param[0].asFloat() - x;
   dy = param[1].asFloat() - y;
-  dz = param[2].asFloat() + 1 - y;
+  dz = param[2].asFloat() + 1 - z;
 
   x = param[0].asFloat();
   y = param[1].asFloat();
