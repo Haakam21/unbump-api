@@ -26,7 +26,7 @@ potholesRouter.post('/', async (request, response) => {
 
   const potholes = await Pothole.find()
   potholes.forEach(pothole => {
-    if (ruler.distance([latitude, longitude], [pothole.latitude, pothole.longitude]) < 1) {
+    if (ruler.distance([latitude, longitude], [pothole.latitude, pothole.longitude]) < 2) {
       return response.send(pothole)
     }
   })
