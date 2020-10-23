@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="icon" href="icon.jpg">
-    <title>Road Recon</title>
+    <link rel="icon" href="icon.svg">
+    <title>unBump</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
 
@@ -31,16 +31,24 @@
       }
       img {
         height: 3rem;
-        width: 15rem;
         margin-top: 1rem;
+      }
+      #overlay {
+        height: 18rem;
+        width: 24rem;
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
       }
     </style>
   </head>
   <body>
     <div id="container">
       <div id="map"></div>
-      <img src="logo.jpg">
+      <img src="logo.svg">
     </div>
+
+    <iframe id="overlay" src="https://www.youtube.com/embed/1aPPNK6nmck" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://unpkg.com/cheap-ruler@3.0.1/cheap-ruler.min.js"></script>
@@ -69,12 +77,13 @@
       });
       map.addControl(geolocate);
 
-      map.on('load', function() {
+      /*map.on('load', function() {
       	geolocate.trigger();
-      });
+      });*/
 
       geolocate.on('geolocate', function(){
-        var coords = geolocate._lastKnownPosition.coords
+        var coords = geolocate._lastKnownPosition.coords;
+        console.log(coords);
 
         var ruler = new CheapRuler(coords.latitude, 'meters');
 
