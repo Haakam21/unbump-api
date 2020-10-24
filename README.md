@@ -1,3 +1,3 @@
-# road-conditions
+# unbump-api
 
-A system for detecting, storing, and serving road condition data
+An api for storing, and serving pothole location data
