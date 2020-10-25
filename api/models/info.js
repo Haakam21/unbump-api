@@ -8,8 +8,7 @@ const infoSchema = new mongoose.Schema({
   text: {
     type: String,
     required: true
-  },
-  date: Date
+  }
 })
 
 infoSchema.set('toJSON', {
