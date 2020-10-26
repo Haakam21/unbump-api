@@ -7,7 +7,7 @@
     <link rel="icon" href="icon.svg">
     <title>unBump</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
@@ -29,9 +29,16 @@
       #map {
         flex: 1 1 auto;
       }
-      img {
-        height: 3rem;
+      #footer {
         margin-top: 1rem;
+      }
+      #logo {
+        height: 3rem;
+        float: left;
+      }
+      #info {
+        font-size: 1.5rem;
+        float: right;
       }
       #overlay {
         height: 18rem;
@@ -45,7 +52,10 @@
   <body>
     <div id="container">
       <div id="map"></div>
-      <img src="logo.svg">
+      <div id="footer">
+        <img id="logo" src="logo.svg">
+        <span id="info">Loading...</span>
+      </div>
     </div>
 
     <iframe id="overlay" src="https://www.youtube.com/embed/1aPPNK6nmck" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -77,13 +87,8 @@
       });
       map.addControl(geolocate);
 
-      /*map.on('load', function() {
-      	geolocate.trigger();
-      });*/
-
       geolocate.on('geolocate', function(){
         var coords = geolocate._lastKnownPosition.coords;
-        console.log(coords);
 
         var ruler = new CheapRuler(coords.latitude, 'meters');
 
@@ -100,6 +105,8 @@
         var response = await axios.get('/api/potholes');
 
         potholes = response.data;
+
+        document.getElementById("info").textContent = `${potholes.length} potholes and counting!`;
 
         for (i = 0; i < potholes.length; i++) {
           new mapboxgl.Marker().setLngLat([potholes[i].longitude, potholes[i].latitude]).addTo(map);
